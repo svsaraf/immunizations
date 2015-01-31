@@ -1,1 +1,1 @@
-Immunizations project for DrChrono
+Legacy README from django-heroku repo.
