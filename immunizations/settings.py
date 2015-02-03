@@ -15,6 +15,7 @@ import socket
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -39,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'dashboard',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -75,6 +77,9 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+TEMPLATE_DIRS = (
+    os.path.join(PROJECT_PATH, '..', 'templates'),
+)
 
 if socket.gethostname() != 'Sanjay-Sarafs-MacBook-Pro.local':
     DATABASES['default'] =  dj_database_url.config()
