@@ -1,7 +1,7 @@
 {% extends "dashboard/home.html" %}
 
 {% block content %}
-          <h2 class="sub-header">Current Immunizations</h2>
+          <h2 class="sub-header">Current Patients<a href="/refresh/" type="button" class="btn btn-success pull-right"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></a></h2>
           <div class="table-responsive">
             <table class="table table-striped">
               <thead>
@@ -18,7 +18,7 @@
                   <td>{{ person.patientid }}</td>
                   <td><a href="/patient/{{ person.patientid }}">{{ person.name }}</td>
                   <td>{{ person.age }}</td>
-                  <td>{{ person.dob }}</td>
+                  <td>{{ person.dob|date:"SHORT_DATE_FORMAT" }}</td>
                 </tr>
                 {% endfor %}
               </tbody>

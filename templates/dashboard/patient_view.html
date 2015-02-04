@@ -1,12 +1,12 @@
 {% extends "dashboard/home.html" %}
 
 {% block content %}
-          <h2 class="sub-header">Current Patient View</h2>
+          <h2 class="sub-header">Current Patient View for {{ current_patient.name }}</h2>
           <div class="table-responsive">
             <table class="table table-striped">
               <thead>
                 <tr>
-                  <th>Immunizations Overdue</th>
+                  <th>Immunizations Due</th>
                   <th>Number</th>
                   <th>Catch up Age</th>
                   <th>Completed?</th>
@@ -26,7 +26,7 @@
                 {% endfor %}
               </tbody>
             </table>
-          <h3>{{ current_patient.name }}</h3>
+          <h3>{{ current_patient.name }} {% if uptodate %} is up to date! {% endif %}</h3>
           <h5>{{ current_patient.age }} years old.</h5>
           <table class="table table-striped">
               <thead>

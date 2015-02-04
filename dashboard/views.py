@@ -7,6 +7,9 @@ import math
 from django.http import HttpResponseRedirect, HttpResponse
 import requests
 from datetime import datetime
+from django.utils import dateparse
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 def home(request):
     context = RequestContext(request)
@@ -60,7 +63,8 @@ def addpatients(request):
 		id_number = request.POST['id_number']
 		name = request.POST['name']
 		age = request.POST['age']
-		patient = Patient(patientid=id_number, name=name, age=age)
+		dob = datetime.now()-relativedelta(years=int(age))
+		patient = Patient(patientid=id_number, name=name, age=age, dob=dob)
 		patient.save()
 		return HttpResponseRedirect('/patients/')
 	patient_list = Patient.objects.all()
@@ -73,6 +77,43 @@ def addpatients(request):
 	return render_to_response('dashboard/patients.html', {'patient_list': patient_list}, context)
 # Create your views here.
 
+#COPIED FROM STACK OVERFLOW
+#http://stackoverflow.com/questions/2217488/age-from-birthdate-in-python
+def calculate_age(born):
+	today = date.today()
+	return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+def refresh(request):
+	#refresh api call
+	bearer = 'Bearer ' + 'DZuqCy0On4ejqFmqrOWGo6CMXEw1Mc'
+	headers = {'Authorization': bearer}
+	domain = 'https://drchrono.com'
+	patients = []
+	patients_url = '/api/patients'
+	while patients_url:
+		data = requests.get(domain + patients_url, headers = headers).json()
+		patients.extend(data['results'])
+		patients_url = data['next']
+
+	for p in patients:
+		n = p['first_name'] + " " + p['last_name']
+		try:
+			curr_dob = dateparse.parse_date(p['date_of_birth'])
+		except:
+			curr_dob = datetime.now()
+		a = calculate_age(curr_dob)
+		updated_values = {}
+		updated_values['name']=n
+		updated_values['age']=a
+		updated_values['dob']=curr_dob
+		obj, created = Patient.objects.update_or_create(patientid=str(p['id']), defaults=updated_values)
+		#newt = Patient(name=n,age=a,patientid=str(p['id']),dob=curr_dob)
+		#newt.save()
+
+	return HttpResponseRedirect("/patients/")	
+
+"""
+Legacy code. Delete.
 def addfromapi(request):
 	headers = {'Authorization': 'Bearer C8BJIYgfI23ZusS8rQpANFjHBkkTCE',}
 	domain = 'https://drchrono.com'
@@ -91,7 +132,7 @@ def addfromapi(request):
 	return HttpResponseRedirect("/")
 
 	#for patient in patients:
-
+"""
 
 def addimmuno(request):
 	if request.method == 'POST':
@@ -108,6 +149,22 @@ def addimmuno(request):
 		return HttpResponseRedirect(redirecturl)
 	return HttpResponseRedirect("/")
 
+import pdb
+
+
+#Unfinished ajax call to do search for patients.
+def get_patients(request):
+	pats = Patient.objects.filter(name__startswith=request.GET['search'])
+	#pdb.set_trace()
+	print "request: " + request.GET['search']
+	print "pats: " + str(len(pats))
+	results = []
+	for p in pats:
+		print p.name + " processing."
+		results.append(p.name)
+	resp = request.REQUEST['callback'] + '(' + simplejson.dumps(results) + ');'
+	return HttpResponse(resp, content_type='application/json')
+
 def patientview(request, patientid):
 	context = RequestContext(request)
 
@@ -115,12 +172,15 @@ def patientview(request, patientid):
 	records = ImmunizationRecord.objects.filter(patient=current_patient)
 	immunizations_needed = Immunization.objects.filter(recommended_age__lte=current_patient.age)
 	list_needed = []
+	uptodate = False
+	if len(immunizations_needed) == len(records):
+		uptodate = True
 	#for im in immunizations_needed:
 	#	x = records.get(immunization=im)
 	#	if x.exists():
 	#		im.delete()
 
-	return render_to_response('dashboard/patient_view.html', {'current_patient': current_patient, 'records': records, 'needed': immunizations_needed}, context)
+	return render_to_response('dashboard/patient_view.html', {'current_patient': current_patient, 'records': records, 'needed': immunizations_needed, 'uptodate': uptodate}, context)
 
 """
 curl -X POST --data-urlencode "code=l1pCK8wg2hoguI9SJyr0MCgzPG20dH&grant_type=authorization_code&redirect_uri=http%3A//0.0.0.0%3A5000/&client_id=Exc7zW1HfQNhC6bqqcDmrYtzVmH8IEF8QHLvcmQ4&client_secret=nblr5Gnj34y7eC8a2ZhiO0Gk29L0ZixNAPrYqAGkn1XEkmX8PY8dOtGcmmV68yO7TsckTPfV1OOVilEQPm8ztFSLYmEc5JuxuHRWDPheZ0vqlFl2HVvo7EjjR9hSZeaa" https://drchrono.com/o/token/

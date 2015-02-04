@@ -2,7 +2,7 @@ from django.db import models
 
 class Patient(models.Model):
 	name = models.CharField(max_length=1000, default="")
-	patientid = models.IntegerField()
+	patientid = models.IntegerField(unique=True)
 	age = models.DecimalField(max_digits=5, decimal_places=2, null=True)
 	dob = models.DateTimeField()
 
