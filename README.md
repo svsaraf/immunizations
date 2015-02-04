@@ -9,4 +9,4 @@ Steps to install, from os x command line:
     pip install -r requirements.txt
     foreman start
     
-ebsite should be on your local: http://0.0.0.0:5000/    
+Website should be on your local: http://0.0.0.0:5000/    
