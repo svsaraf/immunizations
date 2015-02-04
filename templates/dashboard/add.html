@@ -1,0 +1,89 @@
+{% extends "dashboard/home.html" %}
+
+{% block content %}
+          <h2 class="sub-header">Current Immunizations</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID#</th>
+                  <th>Name</th>
+                  <th>Number</th>
+                  <th>Recommended age</th>
+                  <th>Catch up age</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for vaccine in immune_list %}
+                <tr>
+                  <td>{{ vaccine.immunizationid }}</td>
+                  <td>{{ vaccine.name }}</td>
+                  <td>{{ vaccine.number }}</td>
+                  <td>{{ vaccine.recommended_age }}</td>
+                  <td>{{ vaccine.catchup_age }} years</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          <form role="form" id="addimmunization_form" action="/add/" method="post">
+          {% csrf_token %}
+            <div class="col-lg-6">
+          <h4 class="sub-header">Add Immunization</h4>
+                <div class="form-group">
+                    <label for="id_number">ID#</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="id_number" id="id_number" placeholder="0000" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="name_vaccine">Name of Vaccine</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="name_vaccine" name="name_vaccine" placeholder="Enter name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="number">Number (only applicable for series)</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="number" name="number" placeholder="Number" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="recommended_age">Recommended Age</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="recommended_age" name="recommended_age" placeholder="Recommended Age" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="catchup_age">Catch up Age</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="catchup_age" name="catchup_age" placeholder="Catch up Age" required>
+                    </div>
+                </div>
+                <input type="submit" name="submit" id="submit" value="Submit" class="btn btn-info">
+            </div>
+        </form>
+          </div>{% endblock %}
+
+{% block scripts %}
+<script>
+
+$(document).ready(function() {
+	$("#overview").removeClass("active");
+	$("#addimmunizations").addClass("active");
+  $("#addpatients").removeClass("active");
+	$("#addimmunization_form").submit(function(event) {
+    /*alert("hello");
+		event.preventDefault();
+		$.ajax({
+			type: "POST",
+			url: "/add/",
+			data: $("#addimmunization_form").serialize()
+			success: function(data)
+			{
+				alert(data);
+			}
+		});*/
+	});
+});
+</script>
+{% endblock %}

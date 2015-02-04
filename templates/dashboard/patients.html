@@ -1,0 +1,64 @@
+{% extends "dashboard/home.html" %}
+
+{% block content %}
+          <h2 class="sub-header">Current Immunizations</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID#</th>
+                  <th>Name</th>
+                  <th>Age</th>
+                  <th>DOB</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for person in patient_list %}
+                <tr>
+                  <td>{{ person.patientid }}</td>
+                  <td><a href="/patient/{{ person.patientid }}">{{ person.name }}</td>
+                  <td>{{ person.age }}</td>
+                  <td>{{ person.dob }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% for guy in patients %}
+              {{ guy.first_name }}
+            {% endfor %}
+          <form role="form" id="addpatient_form" action="/patients/" method="post">
+          {% csrf_token %}
+            <div class="col-lg-6">
+          <h4 class="sub-header">Add Patient</h4>
+                <div class="form-group">
+                    <label for="id_number">ID#</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="id_number" id="id_number" placeholder="0000" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="age">Age (use decimal for infants)</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="age" name="age" placeholder="Age" required>
+                    </div>
+                </div>
+                <input type="submit" name="submit" id="submit" value="Submit" class="btn btn-info">
+            </div>
+        </form>
+          </div>{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+  $("#overview").removeClass("active");
+  $("#addimmunizations").removeClass("active");
+  $("#addpatients").addClass("active");
+});
+</script>
+{% endblock %}
